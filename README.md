@@ -6,4 +6,4 @@ This repo stores codes and data for the paper:
 It contains: 
 1. Scripts for the KNN method presented in the paper. And supplementary data for performance results.
 2. An extended implementation of the RCK program, called KNN-RCK which takes an input PWM as its sequence model.
-3. Predicted sequence preference in the form of PWM for 100 poorly studied proteins which have no binding preference information available before.
+3. Predicted sequence preference in the form of PWM for ~1000 poorly studied proteins which have no binding preference information available before.
