@@ -1,7 +1,7 @@
 Welcome!
 
 This repo stores codes and data for the paper:
-> Shu Yang, Junwen Wang, Raymond Ng. Predicting sequence preference for poorly studied RNA-binding protein based on correlated evolution. 
+> Shu Yang, Junwen Wang, Raymond Ng. Inferring RNA sequence preferences for poorly studied RNA-binding proteins based on co-evolution. BMC Bioinformatics. 2018.
 
 It contains: 
 1. Scripts for the KNN method presented in the paper. And supplementary data for performance results.
