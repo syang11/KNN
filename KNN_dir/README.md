@@ -13,4 +13,4 @@ perl KNNpwm.pl homologs_PWM_dir protein_PID_file optK output_dir
 ```
 perl makePromat.pl input_dir fasta_file_name output_dir protein_PID_file
 ```
-The `fasta_file_name` here can be sample.fa for a simple example.
+The `fasta_file_name` here can be *sample.fa* for a simple example.
