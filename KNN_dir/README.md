@@ -1,4 +1,8 @@
-KNNpwm.pl requires 4 argument: <homolog PWM dir with PWMs having equal length> <protein similarity matrix file derived from ClustalW> <optK of KNN> <output dir for predicted PWMs>
+KNNpwm.pl requires 4 argument: 
+1. homolog PWM dir with PWMs having equal length
+2. protein similarity matrix file derived from ClustalW
+3. optK of KNN
+4. output dir for predicted PWMs>
   
 * To predict PWM based on homolog neighbors' PWMs:
 ```
