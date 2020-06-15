@@ -71,7 +71,7 @@ string getString(int i, int motifWidth) {
 	return rc;
 }
 
-//sy: convert PWM value (from expwm[][]; 1st dimension is ACGU, 2nd dimension is position) to k-mer value (i.e. entry in baseParams[])
+// convert PWM value (from expwm[][]; 1st dimension is ACGU, 2nd dimension is position) to k-mer value (i.e. entry in baseParams[])
 double getPWMdouble(double **pwm, int i, int motifWidth){
 	double sum = 0.0;
 
@@ -142,7 +142,7 @@ void vecToPara(ap::real_1d_array& paraVec) {
 
 	// map back the base parameters
 	int pownum = pow(AlphabetSize, motifWidth);
-	//sy: comment out below
+	// comment out below
 	//for (int i=0; i<pownum; i++){
 	//  baseParams[i] = paraVec(count);
 	//  count++;
@@ -244,23 +244,23 @@ double originalFunc(ap::real_1d_array& paraVec, bool last = false)
 {
 	double result = 0;
 	double regVal = 0;
-	vecToPara(paraVec); // get the updated parameters	//sy: note vecToPara() is modified since paraVec doesnot contain base parameters anymore
+	vecToPara(paraVec); // get the updated parameters	// note vecToPara() is modified since paraVec doesnot contain base parameters anymore
 	for(int i = 0; i < trainSeqNum; i++)
 	{
-		scoresTrain[i] = calcScore(i);	//sy: note calcScore() is implemented differently from the paper (both RCK and RNAcontext papers), see comments inside that function
+		scoresTrain[i] = calcScore(i);	// note calcScore() is implemented differently from the paper (both RCK and RNAcontext papers), see comments inside that function
 	}
 	for (int i = 0; i < trainSeqNum; i++) 
 	{
-		result += square(ratiosTrain[i] - parA * scoresTrain[i] - parB) ;	//sy: this is the loss term (first square term) in formula 5 of RCK paper
+		result += square(ratiosTrain[i] - parA * scoresTrain[i] - parB) ;	// this is the loss term (first square term) in formula 5 of RCK paper
 	}
 
 	// regularization
 	int pownum= pow(AlphabetSize, motifWidth);
 	for (int l=0; l<pownum; l++){
-			regVal += 1 / (1+exp(-biasS-baseParams[l]));	//sy: although baseParams[] is a constant now, I still keep the regularization term the same as RCK (which is different from RNAcontext)
+			regVal += 1 / (1+exp(-biasS-baseParams[l]));	// although baseParams[] is a constant now, I still keep the regularization term the same as RCK (which is different from RNAcontext)
 	}
 	for (int l = 0; l < pownum; l++)
-		for (int k = 0; k < AnnotAlphabetSize; k++) {	//sy: note the RCK implementation leaves this curly bracket empty which may indicate they have tried to regularize annotParams[][] as well but decided not to do it.
+		for (int k = 0; k < AnnotAlphabetSize; k++) {	// note the RCK implementation leaves this curly bracket empty which may indicate they have tried to regularize annotParams[][] as well but decided not to do it.
 		}
      
 	result += regVal * SMALL2;   // SMALL2 corresponds to alpha
@@ -308,7 +308,7 @@ void testBestParamsSeq(string outFileName, string modelFileName, int numParams)
 	modelOut<<"Error on the test set seq only: "<<result<<endl;
 }
 
-// Initializes and optimized the parameters	//sy: pass in additional external pwm file name as parameter to the function
+// Initializes and optimized the parameters	// pass in additional external pwm file name as parameter to the function
 void searchMotif(int seedNum, int seedWidth, int minWidth, int maxWidth, char *outFileName, char* annotFileName, char *outDir, int maxiter, int model, char *expwmFileName) 
 {
 		
@@ -368,13 +368,13 @@ void searchMotif(int seedNum, int seedWidth, int minWidth, int maxWidth, char *o
 	/********ALLOCATE MEMORY FOR PARAMSPREV*****************************************/
 	baseParamsPrev = (double *)malloc(pow(AlphabetSize, maxWidth)*sizeof(double));
 
-	//sy: read in external PWMs parameters from pwm file. The PWMs should contain log-transfered value (should be consistent with sumBaseParamsFunc() in RNAcontext (not RCK))
+	// read in external PWMs parameters from pwm file. The PWMs should contain log-transfered value (should be consistent with sumBaseParamsFunc() in RNAcontext (not RCK))
 	double **expwm = (double **)malloc(AlphabetSize * sizeof(double*));
 	for (int i=0; i< AlphabetSize; i++)
-		expwm[i] = (double *)malloc(maxWidth * sizeof(double));	//sy: here, maxWidth is expected to be the same as minWidth
+		expwm[i] = (double *)malloc(maxWidth * sizeof(double));	// here, maxWidth is expected to be the same as minWidth
 	FILE *expwmfp = fopen(expwmFileName, "r");
 	if (expwmfp == NULL) {
-		perror("sy: fail to read pwm file");
+		perror(" fail to read pwm file");
 		exit(-1);
 	}
 	ReadPWM(expwmfp, maxWidth, AlphabetSize, expwm);
@@ -402,7 +402,7 @@ void searchMotif(int seedNum, int seedWidth, int minWidth, int maxWidth, char *o
 
 		/* optimizer settings starts here */
 
-		numDim = pow(AlphabetSize, motifWidth) * (AnnotAlphabetSize) + 2 + 2;//sy: numDim = pow(AlphabetSize, motifWidth) * (1+AnnotAlphabetSize) + 2 + 2;   // +1 for bias +2 for parA and parB
+		numDim = pow(AlphabetSize, motifWidth) * (AnnotAlphabetSize) + 2 + 2;// numDim = pow(AlphabetSize, motifWidth) * (1+AnnotAlphabetSize) + 2 + 2;   // +1 for bias +2 for parA and parB
 		const int n = numDim;
 		ap::real_1d_array x;
 		x.setbounds(1,n);
@@ -525,18 +525,18 @@ void searchMotif(int seedNum, int seedWidth, int minWidth, int maxWidth, char *o
 			} //closes the else loop which is for non-minMotidWidths
 			
 			/**************** initialize the parameters of the optimizer **********************************/
-			if (model == 1) {	//sy: need to double-check whether/when this condition would be satisfied at all
+			if (model == 1) {	// need to double-check whether/when this condition would be satisfied at all
 				modelFileName = dir + "/model_" + outFile + "_" + mwStr + ".txt";
 				readModel(modelFileName, baseParams, annotParams, biasS, biasA, parA, parB, pownum, AnnotAlphabetSize);
 			}
 
-			//sy: comment out below
+			// comment out below
 			//for (int j=0; j < pownum; j++){ 
 			//	x(paramCounter)= baseParams[j]; 	
 			//	constraints(paramCounter) = 0; 		
 			//	paramCounter++;
 			//}
-			//sy: assign pwm values to baseParams
+			// assign pwm values to baseParams
 			for (int j = 0; j < pownum; j++){
 				baseParams[j] = getPWMdouble(expwm, j, motifWidth);
 			}
@@ -844,13 +844,13 @@ double calcScore(int seqID)
 		AffinityAnnotVals[seqID][kmer] = 1.0 / (1.0 + exp(-1 * (biasA + sumAnnotWeights)));
 	    affinityValsTrain[seqID][kmer] = (AffinitySeqVals[seqID][kmer] * AffinityAnnotVals[seqID][kmer]) - SMALL1;
    	 	
-		//sy: note the score here is simply a sum of all binding probabilities of each k-mer, which is 
+		// note the score here is simply a sum of all binding probabilities of each k-mer, which is 
 		//  different from the RCK paper where score=1-prod_{all k-mers of the seq}(1-affinityValsTrain[seqID][kmer]). 
 		//  Also, note RNAcontext's implementation is also like this which is different from RNAcontext paper
    	 	score +=  affinityValsTrain[seqID][kmer];		
 }
   
-  return score; // / kmerNumsTrain[seqID];	//sy: change to be same as fix2
+  return score; // / kmerNumsTrain[seqID];	// change to be same as fix2
 }
 
 double calcScoreTestWindow(int seqID, int window)
@@ -879,7 +879,7 @@ double calcScoreTestWindow(int seqID, int window)
 	if (occ > max) max = occ;
   }
 
-  return score; // / (kmerNumsTest[seqID]);	//sy: change to be same as fix2
+  return score; // / (kmerNumsTest[seqID]);	// change to be same as fix2
 }
 
 // Calculates the score of a test sequence
@@ -905,13 +905,13 @@ double calcScoreTest(int seqID)
 	    affAnnot = 1.0 / (1.0 + exp(-1 * (biasA + sumAnnotWeights)));
 	    occ = (affSeq * affAnnot);// - small1;
 
-		//sy: note the score here is simply a sum of all binding probabilities of each k-mer, which is 
+		// note the score here is simply a sum of all binding probabilities of each k-mer, which is 
 		//  different from the RCK paper where score=1-prod_{all k-mers of the seq}(1-affinityValsTrain[seqID][kmer]). 
 		//  Also, note RNAcontext's implementation is also like this which is different from RNAcontext paper
 		score += occ;
   }
 
-  return score; // / (kmerNumsTest[seqID]);	//sy: change to be same as fix2
+  return score; // / (kmerNumsTest[seqID]);	// change to be same as fix2
 }
 // Calculates the score of a test sequence
 double calcScoreTestSeq(int seqID)
@@ -950,7 +950,7 @@ double calcGradParams(int paramType, int alphIndex = 0, ap::real_1d_array& gradV
   if (paramType == ANNOT) {
     for (int i = 0; i < alphIndex; i++) 
 	for (int j = 0; j < AnnotAlphabetSize; j++)
-		gradVec(i*AnnotAlphabetSize + j + 1) = 0;//sy: comment out: //gradVec(i*AnnotAlphabetSize+j+alphIndex+1) = 0;
+		gradVec(i*AnnotAlphabetSize + j + 1) = 0;// comment out: //gradVec(i*AnnotAlphabetSize+j+alphIndex+1) = 0;
   }
 
   for(int seqID	= 0; seqID < trainSeqNum; seqID++)
@@ -979,7 +979,7 @@ double calcGradParams(int paramType, int alphIndex = 0, ap::real_1d_array& gradV
 					int index = getInt(seqsTrain[seqID].c_str(), kmer, motifWidth);
 					for (int j = 0; j < AnnotAlphabetSize; j++) {
 						kmerVal = (AffinitySeqVals[seqID][kmer] * AffinityAnnotVals[seqID][kmer] * (1 - AffinityAnnotVals[seqID][kmer]) * sumAnnotParamsTrain[seqID][j][kmer]);
-						gradVec(index*AnnotAlphabetSize + j + 1) = gradVec(index*AnnotAlphabetSize + j + 1) + kmerVal * initialTerm * -1 * parA;//sy: comment out: //gradVec(alphIndex + index*AnnotAlphabetSize + j + 1) = gradVec(alphIndex + index*AnnotAlphabetSize + j + 1) + kmerVal * initialTerm * -1 * parA;
+						gradVec(index*AnnotAlphabetSize + j + 1) = gradVec(index*AnnotAlphabetSize + j + 1) + kmerVal * initialTerm * -1 * parA;// comment out: //gradVec(alphIndex + index*AnnotAlphabetSize + j + 1) = gradVec(alphIndex + index*AnnotAlphabetSize + j + 1) + kmerVal * initialTerm * -1 * parA;
 					}
 				}
         	    else if(paramType == BIASS) 
@@ -1000,7 +1000,7 @@ double calcGradParams(int paramType, int alphIndex = 0, ap::real_1d_array& gradV
 		   double tmp = exp(-biasS - baseParams[i]);
 	   }
    }
-   if (paramType == BIASS) {		//sy: this is the gradient for BiasS in the regularization term of RCK
+   if (paramType == BIASS) {		// this is the gradient for BiasS in the regularization term of RCK
 	   for (int i = 0; i < alphIndex; i++) {
 		   double tmp = exp(-biasS - baseParams[i]);
 		   result += SMALL2 / pow(1 + tmp, 2) * tmp;
@@ -1019,7 +1019,7 @@ void gradientFunc(ap::real_1d_array& gradVec, ap::real_1d_array& paraVec)
     int count = 1;
 	// map back the base parameters
 	int pownum = pow(AlphabetSize, motifWidth);
-	//sy: comment out: //calcGradParams(BASE, pownum, gradVec);   count += pownum;
+	// comment out: //calcGradParams(BASE, pownum, gradVec);   count += pownum;
 
    // map back the annot parameters
 	calcGradParams (ANNOT,pownum, gradVec);	  
@@ -1040,7 +1040,7 @@ void funcgrad( ap::real_1d_array& x, double& f, ap::real_1d_array& g)
 {
 	f=0;
 	f = originalFunc(x);
-	gradientFunc(g, x);		//sy: note gradient vector g has the same dimension as parameter vector x
+	gradientFunc(g, x);		// note gradient vector g has the same dimension as parameter vector x
 	iter++;
 }
 
@@ -1281,7 +1281,7 @@ int main(int argc, char **argv)
 	cout << "open log file" << endl;
 	// convert the alphabet to uppercase 
 	Upper(pm.alphabet);  
-	if (pm.motifFileNameDefinedFlag == 0)	//sy: i.e. training mode
+	if (pm.motifFileNameDefinedFlag == 0)	// i.e. training mode
 	{
 
 		trainSeqNum = readData(pm.trainDataFileName, seqsTrain, ratiosTrain); //read the file
@@ -1321,17 +1321,14 @@ int main(int argc, char **argv)
 		// Read the profiles for training and test sequences
 		readAnnots(pm.annotFileNameTrain, inputAnnotsTrain, trainSeqNum, pm.ignoreAnnotFlag, true);
 		readAnnots(pm.annotFileNameTest, inputAnnotsTest, testSeqNum, pm.ignoreAnnotFlag);
-		// Start searching motifs	//sy: note searchMotif() has one more parameter now for external PWM file name
+		// Start searching motifs	// note searchMotif() has one more parameter now for external PWM file name
 		searchMotif(pm.seedNum, pm.seedWidth, pm.minWidth, pm.maxWidth, pm.outFileName, pm.annotFileNameTrain, pm.outDir, pm.maxIter, pm.inputModelFlag, pm.pwmFileName);
 	}
-	else // score the test sequences given a motif model 	//sy: i.e. predicting mode
+	else // score the test sequences given a motif model 	// i.e. predicting mode
 	{
 		scoreSeqs(pm.testDataFileName, pm.annotFileNameTest, pm.motifFileName, pm.outDir, pm.minWidth, pm.ignoreAnnotFlag);
 	}
 	
 	return 0;
 }
-
-
-
 
