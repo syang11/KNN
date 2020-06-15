@@ -247,7 +247,7 @@ double originalFunc(ap::real_1d_array& paraVec, bool last = false)
 	vecToPara(paraVec); // get the updated parameters	// note vecToPara() is modified since paraVec doesnot contain base parameters anymore
 	for(int i = 0; i < trainSeqNum; i++)
 	{
-		scoresTrain[i] = calcScore(i);	// note calcScore() is implemented differently from the paper (both RCK and RNAcontext papers), see comments inside that function
+		scoresTrain[i] = calcScore(i);	
 	}
 	for (int i = 0; i < trainSeqNum; i++) 
 	{
@@ -260,7 +260,7 @@ double originalFunc(ap::real_1d_array& paraVec, bool last = false)
 			regVal += 1 / (1+exp(-biasS-baseParams[l]));	// although baseParams[] is a constant now, I still keep the regularization term the same as RCK (which is different from RNAcontext)
 	}
 	for (int l = 0; l < pownum; l++)
-		for (int k = 0; k < AnnotAlphabetSize; k++) {	// note the RCK implementation leaves this curly bracket empty which may indicate they have tried to regularize annotParams[][] as well but decided not to do it.
+		for (int k = 0; k < AnnotAlphabetSize; k++) {	// note the RCK implementation leaves this curly bracket empty
 		}
      
 	result += regVal * SMALL2;   // SMALL2 corresponds to alpha
@@ -374,7 +374,7 @@ void searchMotif(int seedNum, int seedWidth, int minWidth, int maxWidth, char *o
 		expwm[i] = (double *)malloc(maxWidth * sizeof(double));	// here, maxWidth is expected to be the same as minWidth
 	FILE *expwmfp = fopen(expwmFileName, "r");
 	if (expwmfp == NULL) {
-		perror(" fail to read pwm file");
+		perror("fail to read pwm file");
 		exit(-1);
 	}
 	ReadPWM(expwmfp, maxWidth, AlphabetSize, expwm);
@@ -525,7 +525,7 @@ void searchMotif(int seedNum, int seedWidth, int minWidth, int maxWidth, char *o
 			} //closes the else loop which is for non-minMotidWidths
 			
 			/**************** initialize the parameters of the optimizer **********************************/
-			if (model == 1) {	// need to double-check whether/when this condition would be satisfied at all
+			if (model == 1) {	// 
 				modelFileName = dir + "/model_" + outFile + "_" + mwStr + ".txt";
 				readModel(modelFileName, baseParams, annotParams, biasS, biasA, parA, parB, pownum, AnnotAlphabetSize);
 			}
@@ -844,13 +844,11 @@ double calcScore(int seqID)
 		AffinityAnnotVals[seqID][kmer] = 1.0 / (1.0 + exp(-1 * (biasA + sumAnnotWeights)));
 	    affinityValsTrain[seqID][kmer] = (AffinitySeqVals[seqID][kmer] * AffinityAnnotVals[seqID][kmer]) - SMALL1;
    	 	
-		// note the score here is simply a sum of all binding probabilities of each k-mer, which is 
-		//  different from the RCK paper where score=1-prod_{all k-mers of the seq}(1-affinityValsTrain[seqID][kmer]). 
-		//  Also, note RNAcontext's implementation is also like this which is different from RNAcontext paper
+		// note the score here is simply a sum of all binding probabilities of each k-mer
    	 	score +=  affinityValsTrain[seqID][kmer];		
 }
   
-  return score; // / kmerNumsTrain[seqID];	// change to be same as fix2
+  return score; // / kmerNumsTrain[seqID];	
 }
 
 double calcScoreTestWindow(int seqID, int window)
@@ -879,7 +877,7 @@ double calcScoreTestWindow(int seqID, int window)
 	if (occ > max) max = occ;
   }
 
-  return score; // / (kmerNumsTest[seqID]);	// change to be same as fix2
+  return score; // / (kmerNumsTest[seqID]);	
 }
 
 // Calculates the score of a test sequence
@@ -904,10 +902,7 @@ double calcScoreTest(int seqID)
 	    }
 	    affAnnot = 1.0 / (1.0 + exp(-1 * (biasA + sumAnnotWeights)));
 	    occ = (affSeq * affAnnot);// - small1;
-
-		// note the score here is simply a sum of all binding probabilities of each k-mer, which is 
-		//  different from the RCK paper where score=1-prod_{all k-mers of the seq}(1-affinityValsTrain[seqID][kmer]). 
-		//  Also, note RNAcontext's implementation is also like this which is different from RNAcontext paper
+		
 		score += occ;
   }
 
