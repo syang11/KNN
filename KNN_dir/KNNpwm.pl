@@ -300,8 +300,8 @@ unless(-e $outdir){
 	print "Error: when make dir $outdir: $@\n" if $@;
 }
 
-# n-fold; set $n_fold to $#proteinNames for leave one out prediction
-my $n_fold=$#proteinNames; 
+# n-fold; set $n_fold to number of proteins for leave one out prediction
+my $n_fold=$#proteinNames+1; 
 
 # shuffle the protein array order
 my @proteinNamesShuffled = shuffle @proteinNames;
